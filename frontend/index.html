@@ -1,0 +1,225 @@
+<!doctype html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>Oncoclock</title>
+	<script src="js/dhtmlxscheduler.js?v=6.0.5" charset="utf-8"></script>
+	<link rel="stylesheet" href="js/dhtmlxscheduler_material.css?v=6.0.5" type="text/css" charset="utf-8">
+	<style type="text/css" >
+		html, body{
+			margin:0;
+			padding:0;
+			height:100%;
+			overflow:hidden;
+		}
+
+		.dhx_cal_event div.dhx_footer,
+		.dhx_cal_event.past_event div.dhx_footer,
+		.dhx_cal_event.event_english div.dhx_footer,
+		.dhx_cal_event.event_hungarian div.dhx_footer,
+		.dhx_cal_event.event_junction div.dhx_footer{
+			background-color: transparent !important;
+		}
+		.dhx_cal_event .dhx_body{
+			-webkit-transition: opacity 0.1s;
+			transition: opacity 0.1s;
+			opacity: 0.7;
+		}
+		.dhx_cal_event .dhx_title{
+			line-height: 12px;
+		}
+		.dhx_cal_event_line:hover,
+		.dhx_cal_event:hover .dhx_body,
+		.dhx_cal_event.selected .dhx_body,
+		.dhx_cal_event.dhx_cal_select_menu .dhx_body{
+			opacity: 1;
+		}
+
+		.dhx_cal_event.event_hungarian div,
+		.dhx_cal_event_line.event_hungarian{
+			background-color: #FF5722 !important;
+			border-color: #732d16 !important;
+		}
+
+		.dhx_cal_event.dhx_cal_editor.event_hungarian{
+			background-color: #FF5722 !important;
+		}
+
+		.dhx_cal_event_clear.event_hungarian{
+			color:#FF5722 !important;
+		}
+
+		.dhx_cal_event.event_junction div,
+		.dhx_cal_event_line.event_junction{
+			background-color: #0FC4A7 !important;
+			border-color: #698490 !important;
+		}
+
+		.dhx_cal_event.dhx_cal_editor.event_junction{
+			background-color: #0FC4A7 !important;
+		}
+
+		.dhx_cal_event_clear.event_junction{
+			color:#0FC4A7 !important;
+		}
+
+		.dhx_cal_event.event_english div,
+		.dhx_cal_event_line.event_english{
+			background-color: #684f8c !important;
+			border-color: #9575CD !important;
+		}
+
+		.dhx_cal_event.dhx_cal_editor.event_english{
+			background-color: #684f8c !important;
+		}
+
+		.dhx_cal_event_clear.event_english{
+			color:#B82594 !important;
+		}
+
+
+.float{
+	position:fixed;
+	width:50px;
+	height:50px;
+	bottom:40px;
+	right:40px;
+	background-color:#0C9;
+	color:#FFF;
+	border-radius:50px;
+	font-size: 34px;
+	text-decoration: none!important;
+	text-align:center;
+	box-shadow: 2px 2px 3px #999;
+}
+
+.my-float{
+	margin-top:22px;
+}
+
+.delete-all-button {
+      position: fixed;
+	  bottom:30px;
+	  left:50px;
+      transform: translateY(-50%);
+      background-color: #990000;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .delete-all-button:hover {
+      background-color: #cc0000;
+    }
+	</style>
+
+	<script charset="utf-8">
+
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status === 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status, xhr.response);
+      }
+    };
+    xhr.send();
+};
+
+		window.addEventListener("DOMContentLoaded", function(){
+			scheduler.config.time_step = 30;
+			scheduler.config.multi_day = true;
+			scheduler.locale.labels.section_subject = "Subject";
+			scheduler.config.first_hour = 6;
+			scheduler.config.limit_time_select = true;
+			scheduler.config.details_on_dblclick = true;
+			scheduler.config.details_on_create = true;
+
+			scheduler.templates.event_class=function(start, end, event){
+				var css = "";
+
+				if(event.subject) // if event has subject property then special class should be assigned
+					css += "event_"+event.subject;
+
+				if(event.id == scheduler.getState().select_id){
+					css += " selected";
+				}
+				return css; // default return
+
+				/*
+					Note that it is possible to create more complex checks
+					events with the same properties could have different CSS classes depending on the current view:
+
+					var mode = scheduler.getState().mode;
+					if(mode == "day"){
+						// custom logic here
+					}
+					else {
+						// custom logic here
+					}
+				*/
+			};
+
+			var subject = [
+				{ key: '', label: 'Appointment' },
+				{ key: 'english', label: 'English' },
+				{ key: 'hungarian', label: 'Math' },
+				{ key: 'junction', label: 'Science' }
+			];
+
+			scheduler.config.lightbox.sections=[
+				{name:"description", height:43, map_to:"text", type:"textarea" , focus:true},
+				{name:"subject", height:20, type:"select", options: subject, map_to:"subject" },
+				{name:"time", height:72, type:"time", map_to:"auto" }
+			];
+
+			scheduler.init('scheduler_here', new Date(2023, 10, 26), "week");
+
+			var appointments = [];
+			getJSON('http://localhost:8000',
+function(err, data) {
+  if (err !== null) {
+    alert('Something went wrong accessing the backend: ' + err);
+  } else {
+    appointments = data;
+    console.log(appointments);
+        scheduler.parse(appointments);
+  }
+});
+
+			
+
+		});
+
+
+	</script>
+</head>
+<body>
+	<div id="scheduler_here" class="dhx_cal_container" style='width:100%; height:100%;'>
+		<div class="dhx_cal_navline">
+			<div class="dhx_cal_prev_button"></div>
+			<div class="dhx_cal_next_button"></div>
+			<div class="dhx_cal_today_button"></div>
+			<div class="dhx_cal_date"></div>
+			<div class="dhx_cal_tab" data-tab="day"></div>
+			<div class="dhx_cal_tab" data-tab="week"></div>
+			<div class="dhx_cal_tab" data-tab="month"></div>
+		</div>
+		<div class="dhx_cal_header">
+		</div>
+		<div class="dhx_cal_data">
+		</div>		
+	</div>
+	<a href="/add.html" class="float">
+<span>＋</span>
+</a>
+
+<a href="http://localhost:8000/reset/"/><button class="delete-all-button">RESET TO DEFAULT DATA (TESTING ONLY)</button></a>
+</body>
+</html>

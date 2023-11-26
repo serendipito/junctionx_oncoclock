@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <title>Add new treatment</title>
+</head>
+<body>
+
+<div class="container mt-5">
+  <h2 class="mb-4">Add new set of sessions</h2>
+  <p>Your sessions will be added at the nearest possible time given the constraints.</p>
+  <form method="get" action="http://localhost:8000/add/">
+        <div class="form-group">
+      <label for="personSelect">Patient ID</label>
+      <select class="form-control" id="personSelect" name="identifier">
+        <option value="english">English patient</option>
+        <option value="junction">Junction participant</option>
+        <option value="hungarian">Hungarian patient</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="typeSelect">Treatment option</label>
+      <select class="form-control" id="typeSelect" name="case">
+        <option value="craniospinal">Craniospinal</option>
+        <option value="breast">Breast</option>
+        <option value="breast_special">Breast special</option>
+        <option value="head_neck">Head & neck</option>
+        <option value="abdomen">Abdomen</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="numberInput">Number of treatment sessions</label>
+      <input type="number" class="form-control" id="numberInput" name="num" placeholder="Enter how many treatment sessions are required">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+</body>
+</html>
